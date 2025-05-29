@@ -1,0 +1,53 @@
+<!-- templates/form.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Report Incident</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+        <h1 class="text-2xl font-bold mb-4">📝 Report an Incident</h1>
+        <form action="{{ url_for('submit') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+            <div>
+                <label class="block text-sm font-semibold">Name</label>
+                <input type="text" name="name" required class="w-full p-2 border rounded">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold">Phone</label>
+                <input type="text" name="phone" required class="w-full p-2 border rounded">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold">Category</label>
+                <select name="category" required class="w-full p-2 border rounded">
+                    <option value="Sewer">Sewer</option>
+                    <option value="Flood">Flood</option>
+                    <option value="Fire">Fire</option>
+                    <option value="Earthquake">Earthquake</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold">Severity (1-5)</label>
+                <input type="number" name="severity" min="1" max="5" required class="w-full p-2 border rounded">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold">Description</label>
+                <textarea name="description" class="w-full p-2 border rounded"></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold">Location</label>
+                <textarea name="location" class="w-full p-2 border rounded"></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold">Upload Photo</label>
+                <input type="file" name="photo" accept="image/*" class="w-full p-2 border rounded">
+            </div>
+            <div>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Submit</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

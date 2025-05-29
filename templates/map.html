@@ -1,0 +1,28 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <title>Incident Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <style>
+    #map { height: 600px; width: 100%; }
+  </style>
+</head>
+<body>
+  <h1>Incident Map</h1>
+  <div id="map"></div>
+
+  <script>
+    var map = L.map('map').setView([39.8283, -98.5795], 4);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    var locations = {{ locations_json|safe }};
+
+    locations.forEach(function(incident){
+      L.marker([incident.latitude, incident.longitude])
+        .addTo(map)
+        .bindPopup(`<b>${incident.name}</b><br>${incident.category}<br>${incident.location}`);
+    });
+  </script>
+</body>
+</html> -->

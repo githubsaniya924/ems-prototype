@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Thank You</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 100px;
+            background-color: #f2f2f2;
+        }
+        .message-box {
+            background-color: #fff;
+            display: inline-block;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .message-box h2 {
+            color: #2b7a78;
+        }
+        .message-box p {
+            color: #555;
+        }
+        .btn {
+            margin-top: 20px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2b7a78;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="message-box">
+        <h2>Thank You!</h2>
+        <p>Your incident report has been submitted.</p>
+        <a class="btn" href="{{ url_for('form') }}">Submit Another Report</a><br>
+        <a class="btn" href="{{ url_for('user_dashboard') }}">Go to Dashboard</a>
+    </div>
+</body>
+</html>
