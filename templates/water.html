@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Water Tracking Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+
+  <div class="max-w-5xl mx-auto">
+    <div class="mb-6">
+      <a href="{{ url_for('dashboard') }}" class="text-blue-600 hover:underline">← Back to Main Dashboard</a>
+    </div>
+
+    <h1 class="text-3xl font-bold text-center text-blue-900 mb-8">🌊 Real-Time Water Complaint Dashboard</h1>
+
+    <!-- Chart Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+      <!-- Severity Chart -->
+      <div class="bg-white p-4 rounded shadow">
+        <h2 class="font-semibold mb-2">Water issues Severity Over Time</h2>
+        <canvas id="severityChart" class="w-full h-64"></canvas>
+      </div>
+
+      <!-- Incident Count Chart -->
+      <div class="bg-white p-4 rounded shadow">
+        <h2 class="font-semibold mb-2">Water Incident Count</h2>
+        <canvas id="countChart" class="w-full h-64"></canvas>
+      </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="bg-white p-4 rounded shadow overflow-x-auto">
+      <h2 class="font-semibold mb-2">Recent Water Complaints</h2>
+      <table class="w-full text-sm border">
+        <thead class="bg-blue-600 text-white">
+          <tr>
+            <th class="p-2 border">Name</th>
+            <th class="p-2 border">Location</th>
+            <th class="p-2 border">Severity</th>
+            <th class="p-2 border">Description</th>
+            <th class="p-2 border">Reported At</th>
+          </tr>
+        </thead>
+        <tbody id="waterTableBody">
+          <!-- Real-time rows go here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const incidentCountMap = {};
+    const severityCtx = document.getElementById('severityChart').getContext('2d');
+    const countCtx = document.getElementById('countChart').getContext('2d');
+
+    const severityChart = new Chart(severityCtx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Severity',
+          data: [],
+          backgroundColor: 'rgba(0, 76, 153, 0.2)',
+          borderColor: 'rgba(0, 76, 153, 1)',
+          borderWidth: 2,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        parsing: false,
+        normalized: true,
+      }
+    });
+
+    const countChart = new Chart(countCtx, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Water Incidents',
+          data: [],
+          backgroundColor: 'rgba(0, 123, 255, 0.6)'
+        }]
+      },
+      options: {
+        responsive: true
+      }
+    });
+
+    async function fetchWaterData() {
+      try {
+        const res = await fetch('/api/water-data');
+        const json = await res.json();
+
+        const incidents = json.incidents;
+
+        // Clear existing table
+        const tbody = document.getElementById('waterTableBody');
+        tbody.innerHTML = '';
+
+        // Reset charts data
+        severityChart.data.labels = [];
+        severityChart.data.datasets[0].data = [];
+        countChart.data.labels = [];
+        countChart.data.datasets[0].data = [];
+        // Reset incidentCountMap
+        for (const key in incidentCountMap) delete incidentCountMap[key];
+
+        // Sort incidents by created_at ascending for charts
+        incidents.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+
+        // Fill table & charts
+        incidents.forEach(incident => {
+          // Table row
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td class="p-2 border">${incident.name}</td>
+            <td class="p-2 border">${incident.location}</td>
+            <td class="p-2 border">${incident.severity}</td>
+            <td class="p-2 border">${incident.description}</td>
+            <td class="p-2 border">${incident.created_at}</td>
+          `;
+          tbody.prepend(row);
+
+          // Charts
+          // For severity chart, x = time, y = severity
+          severityChart.data.labels.push(incident.created_at);
+          severityChart.data.datasets[0].data.push(parseInt(incident.severity));
+
+          // For count chart, count number of incidents per created_at timestamp
+          if (incidentCountMap[incident.created_at]) {
+            incidentCountMap[incident.created_at]++;
+          } else {
+            incidentCountMap[incident.created_at] = 1;
+            countChart.data.labels.push(incident.created_at);
+          }
+        });
+
+        // Fill count chart data based on labels
+        countChart.data.datasets[0].data = countChart.data.labels.map(label => incidentCountMap[label]);
+
+        // Update charts
+        severityChart.update();
+        countChart.update();
+
+      } catch (err) {
+        console.error('Error fetching water data:', err);
+      }
+    }
+
+    // Initial fetch and periodic refresh every 5 seconds
+    window.onload = () => {
+      fetchWaterData();
+      setInterval(fetchWaterData, 5000);
+    }
+  </script>
+
+</body>
+</html>
