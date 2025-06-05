@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <h1 class="text-3xl font-bold mb-6">Incident Dashboard</h1>
+    
+    <table class="min-w-full bg-white shadow-md rounded-xl overflow-hidden">
+        <thead class="bg-blue-800 text-white">
+            <tr>
+                <th class="px-4 py-2">ID</th>
+                <th class="px-4 py-2">Name</th>
+                <th class="px-4 py-2">Category</th>
+                <th class="px-4 py-2">Date</th>
+                <th class="px-4 py-2">View</th>
+                <th class="px-4 py-2">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for incident in incidents %}
+            <tr class="border-t text-center">
+                <td class="px-4 py-2">{{ incident.id }}</td>
+                <td class="px-4 py-2">{{ incident.name }}</td>
+                <td class="px-4 py-2">{{ incident.category }}</td>
+                <td class="px-4 py-2">{{ incident.created_at }}</td>
+                
+                <td class="px-4 py-2">
+                    <a href="{{ url_for('view_incident', id=incident.id) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
+                        View
+                    </a>
+                </td>
+
+                <td class="px-4 py-2">
+                    <form action="{{ url_for('toggle_status', id=incident.id) }}" method="POST">
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">
+                            {{ incident.status }}
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
