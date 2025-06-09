@@ -1,109 +1,125 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>User Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-100 min-h-screen font-sans">
+
+  <!-- Header -->
+  <header class="bg-blue-900 text-white shadow-lg py-5 px-8 flex justify-between items-center">
+  <div>
+    <h1 class="text-3xl font-extrabold tracking-wide">RexusOps360™</h1>
+    <p class="text-sm text-gray-300 mt-1">Incident Tracking Operational Dashboard</p>
+    <h4 class="text-sm mt-1 text-gray-300">
+      Powered by 
+      <a href="https://amptier.net" target="_blank" class="text-blue-400 hover:underline hover:text-white transition">
+        Amptier
+      </a>
+    </h4>
+  </div>
+
+  <div class="flex items-center space-x-4">
+    <img src="{{ url_for('static', filename='rexus_logo.png') }}" alt="Rexus Logo" class="h-20 w-auto drop-shadow-lg">
+  </div>
+</header>
 
   <!-- Navbar -->
-  <nav class="bg-blue-600 p-4 text-white flex justify-between items-center">
-    <div class="text-lg font-bold">EMS User Dashboard</div>
-    <div class="space-x-4">
-      <a href="/file-complaint" class="hover:underline">File Complaint</a>
-      <a href="/view-complaints" class="hover:underline">View Complaint Status</a>
-      <a href="/logout" class="hover:underline text-red-200">Logout</a>
+  <nav class="p-4 text-blue-600 flex justify-end items-center bg-white shadow rounded-lg mx-4 mb-4">
+    <div class="space-x-6 font-medium">
+      <a href="/file-complaint" class="hover:underline hover:text-blue-900">File Complaint</a>
+      <a href="/view-complaints" class="hover:underline hover:text-blue-900">View Complaint Status</a>
+      <a href="/logout" class="hover:underline text-red-500">Logout</a>
     </div>
   </nav>
-   {% if weather %}
-<div class="bg-gradient-to-r from-blue-100 to-blue-200 border-l-4 border-blue-500 text-blue-900 p-6 rounded-lg shadow mb-6">
+
+  <!-- Weather Widget -->
+  {% if weather %}
+  <div class="bg-gradient-to-r from-blue-100 to-blue-200 border-l-4 border-blue-500 text-blue-900 p-6 rounded-lg shadow mx-6 mb-6">
     <div class="flex items-center">
-        <div class="text-4xl mr-4">🌦️</div>
-        <div>
-            <p class="text-xl font-bold">Weather in {{ weather.city }}</p>
-            <p class="mt-1"><span class="font-semibold">Temperature:</span> {{ weather.temp }}°C</p>
-            <p><span class="font-semibold">Condition:</span> {{ weather.desc }}</p>
-        </div>
+      <div>
+        <p class="text-xl font-bold">Weather in {{ weather.city }}</p>
+        <p class="mt-1"><span class="font-semibold">Temperature:</span> {{ weather.temp }}°C</p>
+        <p><span class="font-semibold">Condition:</span> {{ weather.desc }}</p>
+      </div>
     </div>
-</div>
-{% endif %}
+  </div>
+  {% endif %}
 
-  <!-- Main Content -->
-  <div class="p-6 max-w-4xl mx-auto">
-    <h2 class="text-2xl font-semibold mb-4">Hi, {{ session['user_name'] }} 👋</h2>
+  <!-- Main Container -->
+  <div class="max-w-6xl mx-auto p-6">
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- File Complaint Card -->
-      <a href="{{ url_for('form') }}" class="bg-white shadow-lg rounded-xl p-6 hover:bg-blue-50 transition">
+    <!-- Notification Section -->
+    {% if notifications %}
+    <div class="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 p-4 mb-6 rounded-lg shadow">
+      <h2 class="text-2xl font-bold mb-2">Public Notifications</h2>
+      <ul class="space-y-2 list-disc list-inside text-sm">
+        {% for note in notifications %}
+        <li>
+          <span class="font-semibold">{{ note.title }}</span> – {{ note.message }}
+          <span class="text-xs text-gray-500 block">({{ note.area }} | {{ note.category }} | {{ note.created_at }})</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <!-- Complaint Summary -->
+    <div class="bg-white p-6 rounded-lg shadow mb-6">
+      <p class="text-lg font-semibold text-gray-700">Total Complaints Filed: {{ total }}</p>
+    </div>
+
+    <!-- Complaint Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <a href="{{ url_for('form') }}" class="bg-white shadow-lg rounded-2xl p-6 hover:bg-blue-50 transition border-t-4 border-blue-600">
         <h3 class="text-lg font-bold text-blue-700 mb-2">File a New Complaint</h3>
         <p class="text-gray-600">Report sewer issues, floods, or emergencies quickly and easily.</p>
       </a>
 
-      <!-- View Complaint Status Card -->
-      <a href="/view-complaints" class="bg-white shadow-lg rounded-xl p-6 hover:bg-green-50 transition">
+      <a href="/view-complaints" class="bg-white shadow-lg rounded-2xl p-6 hover:bg-green-50 transition border-t-4 border-green-600">
         <h3 class="text-lg font-bold text-green-700 mb-2">View Your Complaints</h3>
         <p class="text-gray-600">Track the status of your past complaints and get updates.</p>
       </a>
     </div>
-  </div>
 
-</body>
-</html> 
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>User Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 p-6">
-    <div class="max-w-4xl mx-auto">
-        <h1 class="text-2xl font-bold mb-4">👤 User Dashboard</h1>
-
-        <!-- Weather section (handled by you) -->
-      
-
-        <!-- Complaint Summary -->
-        <div class="bg-white p-4 rounded shadow mb-4">
-            <p class="text-lg font-semibold">Total Complaints Filed: {{ total }}</p>
-        </div>
-
-        <!-- File New Complaint -->
-        <div class="bg-white p-4 rounded shadow mb-4">
-            <h2 class="text-lg font-semibold mb-2">File a New Complaint</h2>
-            <a href="{{ url_for('form') }}" class="inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
-                File Complaint
-            </a>
-        </div>
-
-        <!-- Complaint History -->
-        <div class="bg-white p-4 rounded shadow">
-            <h2 class="text-lg font-semibold mb-2">Complaint History</h2>
-            <table class="w-full table-auto border">
-                <thead>
-                    <tr class="bg-gray-200">
-                        <th class="p-2 border">Category</th>
-                        <th class="p-2 border">Severity</th>
-                        <th class="p-2 border">Description</th>
-                        <th class="p-2 border">Location</th>
-                        <th class="p-2 border">Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in complaints %}
-                    <tr>
-                        <td class="p-2 border">{{ row.category }}</td>
-                        <td class="p-2 border">{{ row.severity }}</td>
-                        <td class="p-2 border">{{ row.description }}</td>
-                        <td class="p-2 border">{{ row.location }}</td>
-                        <td class="p-2 border">{{ row.created_at }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <!-- Complaint History Table -->
+    <div class="bg-white p-6 rounded-lg shadow overflow-x-auto">
+      <h2 class="text-xl font-semibold mb-4 text-gray-700">Complaint History</h2>
+      <table class="w-full table-auto border text-sm">
+        <thead>
+          <tr class="bg-gray-100 text-gray-800">
+            <th class="p-2 border">Category</th>
+            <th class="p-2 border">Severity</th>
+            <th class="p-2 border">Description</th>
+            <th class="p-2 border">Location</th>
+            <th class="p-2 border">Date</th>
+            <th class="p-2 border">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in complaints %}
+          <tr class="hover:bg-gray-50">
+            <td class="p-2 border">{{ row.category }}</td>
+            <td class="p-2 border">{{ row.severity }}</td>
+            <td class="p-2 border">{{ row.description }}</td>
+            <td class="p-2 border">{{ row.location }}</td>
+            <td class="p-2 border">{{ row.created_at }}</td>
+            <td class="p-2 border">
+              <span class="px-2 py-1 rounded text-white
+                {% if row.status == 'Pending' %}bg-yellow-500
+                {% elif row.status == 'In Progress' %}bg-orange-500
+                {% elif row.status == 'Done' %}bg-green-600
+                {% else %}bg-gray-500{% endif %}">
+                {{ row.status }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+
+  </div>
 </body>
 </html>

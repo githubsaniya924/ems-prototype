@@ -1,47 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard</title>
+    <title>Incident Detail</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-8">
-    <h1 class="text-3xl font-bold mb-6">Incident Dashboard</h1>
-    
-    <table class="min-w-full bg-white shadow-md rounded-xl overflow-hidden">
-        <thead class="bg-blue-800 text-white">
-            <tr>
-                <th class="px-4 py-2">ID</th>
-                <th class="px-4 py-2">Name</th>
-                <th class="px-4 py-2">Category</th>
-                <th class="px-4 py-2">Date</th>
-                <th class="px-4 py-2">View</th>
-                <th class="px-4 py-2">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for incident in incidents %}
-            <tr class="border-t text-center">
-                <td class="px-4 py-2">{{ incident.id }}</td>
-                <td class="px-4 py-2">{{ incident.name }}</td>
-                <td class="px-4 py-2">{{ incident.category }}</td>
-                <td class="px-4 py-2">{{ incident.created_at }}</td>
-                
-                <td class="px-4 py-2">
-                    <a href="{{ url_for('view_incident', id=incident.id) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
-                        View
-                    </a>
-                </td>
+<body class="bg-gray-100 p-10">
+    <div class="max-w-3xl mx-auto bg-white shadow-lg rounded-xl p-8">
+        <h1 class="text-4xl font-bold mb-6 text-blue-800">Incident Details</h1>
 
-                <td class="px-4 py-2">
-                    <form action="{{ url_for('toggle_status', id=incident.id) }}" method="POST">
-                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">
-                            {{ incident.status }}
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <div class="grid grid-cols-1 gap-4 text-lg">
+            <div><span class="font-semibold text-gray-700">ID:</span> {{ incident.id }}</div>
+            <div><span class="font-semibold text-gray-700">Name:</span> {{ incident.name }}</div>
+            <div><span class="font-semibold text-gray-700">Category:</span> {{ incident.category }}</div>
+            <div><span class="font-semibold text-gray-700">Description:</span> {{ incident.description }}</div>
+            <div><span class="font-semibold text-gray-700">Date:</span> {{ incident.created_at }}</div>
+            <div><span class="font-semibold text-gray-700">Status:</span> 
+<form action="{{ url_for('update_status', id=incident.id) }}" method="POST" class="inline">
+    <select name="status" class="ml-2 px-4 py-1 rounded text-white font-semibold
+        {% if incident.status == 'Done' %} bg-green-600
+        {% elif incident.status == 'In Progress' %} bg-orange-500
+        {% elif incident.status == 'Pending' %} bg-red-600
+        {% else %} bg-gray-600 {% endif %}" onchange="this.form.submit()">
+        
+        <option value="Pending" {% if incident.status == 'Pending' %}selected{% endif %}>Pending</option>
+        <option value="In Progress" {% if incident.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+        <option value="Done" {% if incident.status == 'Done' %}selected{% endif %}>Done</option>
+    </select>
+</form>
+        {% if incident.photo_path %}
+        <div class="mt-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-2">Uploaded Photo</h2>
+            <img src="{{ url_for('static', filename='uploads/' ~ incident.photo_path) }}"
+                 alt="Incident Photo"
+                 class="rounded-lg shadow-md max-w-full h-auto border border-gray-300" />
+        </div>
+        {% endif %}
+
+        <div class="mt-6">
+            <a href="{{ url_for('dashboard') }}" class="text-blue-600 hover:underline">← Back to Dashboard</a>
+        </div>
+    </div>
 </body>
 </html>

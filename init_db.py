@@ -30,7 +30,47 @@ c.execute('''
     )
 ''')
 
+# Create the admin_users table
+c.execute('''
+CREATE TABLE IF NOT EXISTS admin_users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL
+)
+''')
+
+# Insert new admin user (you can include email if you added it)
+c.execute('''
+    INSERT INTO admin_users (username, password)
+    VALUES (?, ?)
+''', ('abc', 'abc@123'))
+
+c.execute('''
+    INSERT INTO admin_users (username, password)
+    VALUES (?, ?)
+''', ('xyz', 'xyz@123'))
+
+
+c.execute("""
+CREATE TABLE notifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    message TEXT NOT NULL,
+    category TEXT NOT NULL,   -- 'flood', 'sewer', 'water'
+    area TEXT NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+""")
+
+c.execute(""" 
+        ALTER TABLE incidents ADD COLUMN status TEXT DEFAULT 'Open'; """)
+
+c.execute("UPDATE incidents SET status = 'Pending' WHERE status = 'Open'")
+c.execute("UPDATE incidents SET status = 'Done' WHERE status = 'Closed'")
+
+
+
 conn.commit()
 conn.close()
 
-print("✅ Database initialized with 'incidents' table.")
+print("Database initialized with 'incidents' table.")

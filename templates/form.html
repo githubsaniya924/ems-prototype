@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Report Incident</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body class="bg-gray-100 p-8">
     <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
@@ -24,7 +25,7 @@
                     <option value="Sewer">Sewer</option>
                     <option value="Flood">Flood</option>
                     <option value="Fire">Fire</option>
-                    <option value="Earthquake">Earthquake</option>
+                    <option value="Water">Water</option>  
                     <option value="Other">Other</option>
                 </select>
             </div>
@@ -40,14 +41,68 @@
                 <label class="block text-sm font-semibold">Location</label>
                 <textarea name="location" class="w-full p-2 border rounded"></textarea>
             </div>
-            <div>
-                <label class="block text-sm font-semibold">Upload Photo</label>
-                <input type="file" name="photo" accept="image/*" class="w-full p-2 border rounded">
-            </div>
+            <div class="relative">
+    <label class="block text-sm font-semibold mb-2">Upload Photo</label>
+    
+    <!-- Hidden File Input -->
+    <input type="file" name="photo" id="photoInput" accept="image/*" class="hidden" capture="environment">
+
+    <!-- Trigger Button -->
+    <div class="flex items-center justify-between border rounded p-2 cursor-pointer bg-gray-50 hover:bg-gray-100" onclick="togglePhotoOptions()">
+    <span id="fileName" class="text-gray-500">Choose an option</span>
+
+    <!-- Font Awesome Camera/Image Icon -->
+    <i class="fa-regular fa-image text-blue-600 text-xl"></i>
+</div>
+
+
+    <!-- Options Dropdown -->
+    <div id="photoOptions" class="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg hidden z-10">
+        <button type="button" onclick="openCamera()" class="w-full text-left px-4 py-2 hover:bg-gray-100"><i class="fa-solid fa-camera text-blue-600"></i> Use Camera</button>
+        <button type="button" onclick="openFileDialog()" class="w-full text-left px-4 py-2 hover:bg-gray-100"><i class="fa-solid fa-file text-blue-600"></i> Upload from Files</button>
+    </div>
+</div>
             <div>
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Submit</button>
             </div>
         </form>
     </div>
 </body>
+<script>
+  function togglePhotoOptions() {
+    const menu = document.getElementById('photoOptions');
+    menu.classList.toggle('hidden');
+  }
+
+  function openCamera() {
+    const input = document.getElementById('photoInput');
+    input.removeAttribute('capture'); // Reset first
+    input.setAttribute('capture', 'environment');
+    input.click();
+    document.getElementById('photoOptions').classList.add('hidden');
+  }
+
+  function openFileDialog() {
+    const input = document.getElementById('photoInput');
+    input.removeAttribute('capture');
+    input.click();
+    document.getElementById('photoOptions').classList.add('hidden');
+  }
+
+  // Optional: show selected file name
+  document.getElementById('photoInput').addEventListener('change', function () {
+    const fileName = this.files[0]?.name || 'Choose an option';
+    document.getElementById('fileName').textContent = fileName;
+  });
+
+  // Close dropdown if clicked outside
+  document.addEventListener('click', function (e) {
+    const menu = document.getElementById('photoOptions');
+    const trigger = menu.previousElementSibling;
+    if (!menu.contains(e.target) && !trigger.contains(e.target)) {
+      menu.classList.add('hidden');
+    }
+  });
+</script>
+
 </html>

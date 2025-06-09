@@ -8,10 +8,20 @@
 <body class="bg-gray-100 font-sans p-6">
 
   <!-- Top Navigation -->
-  <div class="flex justify-end space-x-6 mb-6">
-    <a href="/send_notification" class="text-blue-600 underline">Update Users</a>
-    <a href="/logout" class="text-blue-600 underline">Logout</a>
-  </div>
+ <div class="max-w-5xl mx-auto">
+    <div class="mb-6">
+      <a href="{{ url_for('dashboard') }}" class="text-blue-600 hover:underline">← Back to main Dashboard</a>
+</div>
+<!-- Flash Message -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="max-w-xl mx-auto mb-6">
+        <div class="bg-green-100 text-green-800 border border-green-300 px-4 py-3 rounded relative" role="alert">
+          {{ messages[0] }}
+        </div>
+      </div>
+    {% endif %}
+  {% endwith %}
 
   <!-- Page Heading -->
   <div class="text-center mb-8">

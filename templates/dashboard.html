@@ -1,205 +1,259 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Leaflet CSS & JS for Map -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RexusOps360™ | EMS Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 p-6">
-    <div class="max-w-6xl mx-auto">
-        <h1 class="text-3xl font-bold mb-6">📊 Incident Dashboard</h1>
+<body class="bg-gray-50 text-gray-800">
+  <!-- Header -->
+  <header class="bg-blue-900 text-white shadow-lg py-5 px-8 flex justify-between items-center">
+  <div>
+    <h1 class="text-3xl font-extrabold tracking-wide">RexusOps360™</h1>
+    <p class="text-sm text-gray-300 mt-1">Incident Tracking Operational Dashboard</p>
+    <h4 class="text-sm mt-1 text-gray-300">
+      Powered by 
+      <a href="https://amptier.net" target="_blank" class="text-blue-400 hover:underline hover:text-white transition">
+        Amptier
+      </a>
+    </h4>
+  </div>
 
-        {% if weather %}
-<div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-4 rounded">
-    <p class="text-lg font-semibold">🌦️ Weather in {{ weather.city }}:</p>
-    <p>Temperature: {{ weather.temp }}°C</p>
-    <p>Condition: {{ weather.desc }}</p>
-</div>
-{% endif %}
+  <div class="flex items-center space-x-4">
+    <img src="{{ url_for('static', filename='rexus_logo.png') }}" alt="Rexus Logo" class="h-20 w-auto drop-shadow-lg">
+  </div>
+</header>
 
+  <!-- Top Bar -->
+  <div class="max-w-7xl mx-auto py-4 px-4 flex justify-between items-center">
+    <p class="text-sm text-gray-500">Date: {{ date_now|safe }}</p>
+    <div class="space-x-6">
+      <a href="/admin_notify" class="text-blue-600 hover:underline font-medium">Notify Users</a>
+      <a href="/logout" class="text-red-500 hover:underline font-medium">Logout</a>
+    </div>
+  </div>
 
-        <!-- Summary Card -->
-        <div class="bg-white p-4 rounded shadow mb-4">
-            <p class="text-lg font-semibold">Total Incidents: {{ total }}</p>
+  <main class="max-w-7xl mx-auto px-4 pb-16">
+    <!-- Weather -->
+    {% if weather %}
+    <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-900 p-4 rounded mb-6">
+      <p class="text-lg font-semibold">🌦️ Weather in {{ weather.city }}:</p>
+      <p>Temperature: {{ weather.temp }}°C</p>
+      <p>Condition: {{ weather.desc }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Navigation Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+      {% set cards = [
+        ('/flood', 'Flood Dashboard', 'Live flood incident tracking'),
+        ('/fire', 'Fire Dashboard', 'Monitor fire emergencies'),
+        ('/water', 'Water Events', 'Leaks and water issues'),
+        ('/sewer', 'Sewer Dashboard', 'Track sewer-related issues')
+      ] %}
+      {% for link, title, desc in cards %}
+      <a href="{{ link }}" class="bg-white border border-gray-200 rounded-xl shadow-md p-6 hover:shadow-lg hover:border-blue-500 transition-all duration-300 group">
+        <div class="mb-2">
+          <h3 class="text-lg font-semibold text-gray-800 group-hover:text-blue-600">{{ title }}</h3>
+          <p class="text-sm text-gray-600">{{ desc }}</p>
         </div>
-
-        <!-- Charts -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Bar Chart -->
-            <div class="bg-white p-4 rounded shadow">
-                <h2 class="font-semibold mb-2">By Category</h2>
-                <canvas id="barChart"></canvas>
-            </div>
-
-            <!-- Line Chart -->
-            <div class="bg-white p-4 rounded shadow">
-                <h2 class="font-semibold mb-2">Over Time</h2>
-                <canvas id="lineChart"></canvas>
-            </div>
+        <div class="mt-2 text-right">
+          <span class="text-sm text-blue-500 font-medium group-hover:underline">View →</span>
         </div>
-
-        <!-- Table of Reports -->
-        <div class="bg-white p-4 rounded shadow mt-6 overflow-x-auto">
-            <h2 class="font-semibold mb-2">Recent Reports</h2>
-            <table class="w-full table-auto border">
-                <thead>
-                    <tr class="bg-gray-200">
-                        <th class="p-2 border">Name</th>
-                        <th class="p-2 border">Phone</th>
-                        <th class="p-2 border">Category</th>
-                        <th class="p-2 border">Severity</th>
-                        <th class="p-2 border">Location</th>
-                        <th class="p-2 border">Reported At</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in recent %}
-                    <tr>
-                        <td class="p-2 border">{{ row.name }}</td>
-                        <td class="p-2 border">{{ row.phone }}</td>
-                        <td class="p-2 border">{{ row.category }}</td>
-                        <td class="p-2 border">{{ row.severity }}</td>
-                        <td class="p-2 border">{{ row.location }}</td>
-                        <td class="p-2 border">{{ row.created_at }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Map Section -->
-        <div class="bg-white p-4 rounded shadow mt-6">
-            <h2 class="font-semibold mb-2">🗺️ Incident Map</h2>
-            <div id="map" class="h-96 w-full rounded"></div>
-        </div>
+      </a>
+      {% endfor %}
     </div>
 
-    <!-- Dashboard Scripts -->
-    <script>
-        let barChart, lineChart, map, markers = [];
+    <!-- Summary -->
+    <div class="bg-white p-4 rounded shadow mb-6 text-lg font-semibold">
+      Total Incidents: <span class="text-blue-600">{{ total }}</span>
+    </div>
 
-        function createOrUpdateCharts(categoryData, dateData) {
-            const categoryLabels = Object.keys(categoryData);
-            const categoryCounts = Object.values(categoryData);
+    <!-- Charts -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div class="bg-white p-4 rounded shadow">
+        <h2 class="text-lg font-semibold mb-2">By Category</h2>
+        <canvas id="barChart"></canvas>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+        <h2 class="text-lg font-semibold mb-2">Over Time</h2>
+        <canvas id="lineChart"></canvas>
+      </div>
+    </div>
 
-            const dateLabels = Object.keys(dateData);
-            const dateCounts = Object.values(dateData);
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 flex justify-center items-center">
+      <div class="bg-white p-4 rounded shadow"  style="width: 620px; height: 400px;">
+        <h2 class="text-lg font-semibold mb-2">By Status</h2>
+        <canvas id="statusChart"></canvas>
+      </div>
+      <div class="bg-white p-4 rounded shadow" style="width: 620px; height: 400px;">
+        <h2 class="text-lg font-semibold mb-2">By City</h2>
+        <canvas id="cityChart"></canvas>
+      </div>
+    </div>
 
-            // Bar Chart
-            if (!barChart) {
-                barChart = new Chart(document.getElementById("barChart"), {
-                    type: 'bar',
-                    data: {
-                        labels: categoryLabels,
-                        datasets: [{
-                            label: 'Incidents',
-                            data: categoryCounts,
-                            backgroundColor: 'rgba(54, 162, 235, 0.6)'
-                        }]
-                    },
-                    options: {
-                        responsive: true
-                    }
-                });
-            } else {
-                barChart.data.labels = categoryLabels;
-                barChart.data.datasets[0].data = categoryCounts;
-                barChart.update();
-            }
+    <!-- Table -->
+    <div class="bg-white p-4 rounded shadow overflow-x-auto">
+      <h2 class="text-lg font-semibold mb-3">Recent Reports</h2>
+      <table class="w-full text-sm border">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="p-2 border">Name</th>
+            <th class="p-2 border">Phone</th>
+            <th class="p-2 border">Category</th>
+            <th class="p-2 border">Severity</th>
+            <th class="p-2 border">Location</th>
+            <th class="p-2 border">Reported At</th>
+            <th class="p-2 border">View</th>
+            <th class="p-2 border">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for incident in recent %}
+          <tr class="hover:bg-gray-50">
+            <td class="p-2 border">{{ incident.name }}</td>
+            <td class="p-2 border">{{ incident.phone }}</td>
+            <td class="p-2 border">{{ incident.category }}</td>
+            <td class="p-2 border">{{ incident.severity }}</td>
+            <td class="p-2 border">{{ incident.location }}</td>
+            <td class="p-2 border">{{ incident.created_at }}</td>
+            <td class="p-2 border text-center">
+              <a href="{{ url_for('view_incident', id=incident.id) }}" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">View</a>
+            </td>
+            <td class="p-2 border text-center">
+              <span class="px-2 py-1 rounded text-white font-semibold
+                {% if incident.status == 'Done' %} bg-green-600
+                {% elif incident.status == 'In Progress' %} bg-orange-500
+                {% elif incident.status == 'Pending' %} bg-red-600
+                {% else %} bg-gray-600 {% endif %}">
+                {{ incident.status }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
 
-            // Line Chart
-            if (!lineChart) {
-                lineChart = new Chart(document.getElementById("lineChart"), {
-                    type: 'line',
-                    data: {
-                        labels: dateLabels,
-                        datasets: [{
-                            label: 'Incidents Over Time',
-                            data: dateCounts,
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            backgroundColor: 'rgba(255, 99, 132, 0.1)',
-                            fill: true,
-                            tension: 0.3
-                        }]
-                    },
-                    options: {
-                        responsive: true
-                    }
-                });
-            } else {
-                lineChart.data.labels = dateLabels;
-                lineChart.data.datasets[0].data = dateCounts;
-                lineChart.update();
-            }
+    <!-- Map -->
+    <div class="bg-white p-4 rounded shadow mt-8">
+      <h2 class="text-lg font-semibold mb-3">🗺️ Incident Map</h2>
+      <div id="map" class="h-96 w-full rounded"></div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script>
+    let barChart, lineChart, statusChart, cityChart, map, markers = [];
+
+    function createOrUpdateCharts(categoryData, dateData, statusData, cityData) {
+      const setOrUpdateChart = (chart, ctxId, type, labels, data, options) => {
+        if (!chart) {
+          return new Chart(document.getElementById(ctxId), {
+            type: type,
+            data: {
+              labels: labels,
+              datasets: [{
+                label: ctxId.replace('Chart', ''),
+                data: data,
+                backgroundColor: type === 'doughnut'
+                  ? ['#4CAF50', '#FF9800', '#F44336', '#9E9E9E']
+                  : 'rgba(54, 162, 235, 0.6)'
+              }]
+            },
+            options: options
+          });
+        } else {
+          chart.data.labels = labels;
+          chart.data.datasets[0].data = data;
+          chart.update();
+          return chart;
         }
+      };
 
-        function updateMap(locations, latestId) {
-            // Clear old markers
-            if (markers.length > 0) {
-                markers.forEach(m => map.removeLayer(m));
-                markers = [];
-            }
+      barChart = setOrUpdateChart(barChart, "barChart", 'bar',
+        Object.keys(categoryData), Object.values(categoryData), { responsive: true });
 
-            const bounds = [];
+      lineChart = setOrUpdateChart(lineChart, "lineChart", 'line',
+        Object.keys(dateData), Object.values(dateData), {
+          responsive: true,
+          fill: true,
+          tension: 0.3
+        });
 
-            locations.forEach(incident => {
-                const lat = incident.latitude;
-                const lng = incident.longitude;
-                if (lat && lng) {
-                    const isLatest = incident.id === latestId;
+      statusChart = setOrUpdateChart(statusChart, "statusChart", 'doughnut',
+        Object.keys(statusData), Object.values(statusData), {
+          responsive: true,
+          plugins: { legend: { position: 'right' } }
+        });
 
-                    const marker = L.marker([lat, lng], {
-                        icon: L.icon({
-                            iconUrl: isLatest
-                                ? 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
-                                : 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-                            iconSize: [32, 32],
-                            iconAnchor: [16, 32],
-                            popupAnchor: [0, -32]
-                        })
-                    }).addTo(map);
+      cityChart = setOrUpdateChart(cityChart, "cityChart", 'bar',
+        Object.keys(cityData), Object.values(cityData), {
+          responsive: true,
+          indexAxis: 'y',
+          scales: { x: { beginAtZero: true } }
+        });
+    }
 
-                    marker.bindPopup(`<strong>${incident.name}</strong><br>${incident.category}<br>${incident.location}`);
-                    markers.push(marker);
-                    bounds.push([lat, lng]);
-                }
-            });
+    function updateMap(locations, latestId) {
+      markers.forEach(m => map.removeLayer(m));
+      markers = [];
+      const bounds = [];
 
-            if (bounds.length > 0) {
-                map.fitBounds(bounds, { padding: [50, 50] });
-            }
+      locations.forEach(({ id, name, category, location, latitude, longitude }) => {
+        if (latitude && longitude) {
+          const marker = L.marker([latitude, longitude], {
+            icon: L.icon({
+              iconUrl: id === latestId
+                ? 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
+                : 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+              iconSize: [32, 32],
+              iconAnchor: [16, 32],
+              popupAnchor: [0, -32]
+            })
+          }).addTo(map);
+          marker.bindPopup(`<strong>${name}</strong><br>${category}<br>${location}`);
+          markers.push(marker);
+          bounds.push([latitude, longitude]);
         }
+      });
 
-        async function fetchDashboardData() {
-            try {
-                const res = await fetch('/api/dashboard-data');
-                const data = await res.json();
+      if (bounds.length > 0) map.fitBounds(bounds, { padding: [50, 50] });
+    }
 
-                createOrUpdateCharts(data.category_data, data.date_data);
-                updateMap(data.locations, data.latest_id);
-            } catch (err) {
-                console.error('Failed to fetch dashboard data:', err);
-            }
-        }
+    async function fetchDashboardData() {
+      try {
+        const res = await fetch('/api/dashboard-data');
+        const data = await res.json();
+        createOrUpdateCharts(data.category_data, data.date_data, data.status_data, data.city_data);
+        updateMap(data.locations, data.latest_id);
+      } catch (err) {
+        console.error('Failed to fetch dashboard data:', err);
+      }
+    }
 
-        function initMap() {
-            map = L.map('map').setView([20.5937, 78.9629], 5);  // Centered on India
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(map);
-        }
+    function initMap() {
+      map = L.map('map').setView([20.5937, 78.9629], 5);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+    }
 
-        window.onload = () => {
-            initMap();
-            fetchDashboardData();
-            setInterval(fetchDashboardData, 5000); // Refresh every 5 seconds
-        };
-    </script>
+    window.onload = () => {
+      initMap();
+      fetchDashboardData();
+      setInterval(fetchDashboardData, 5000);
+    };
+  </script>
 </body>
 </html>

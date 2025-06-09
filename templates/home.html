@@ -1,29 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>EMS Portal</title>
+  <meta charset="UTF-8" />
+  <title>EMS Portal | RexusOps360™</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #f9fafb;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex items-center justify-center">
-  <div class="text-center bg-white p-10 rounded-xl shadow-xl max-w-md w-full">
-    <h1 class="text-3xl font-bold text-blue-700 mb-6">🚨 Emergency Management System</h1>
-    <p class="text-gray-600 mb-8">Choose an option below:</p>
+<body class="min-h-screen flex items-center justify-center px-4">
 
-    <!-- Buttons with space between -->
-    <div class="flex flex-col space-y-4">
-      <a href="{{ url_for('dashboard') }}">
-        <button class="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition">
-          Admin Dashboard
-        </button>
-      </a>
-      <a href="{{ url_for('user_dashboard') }}">
-        <button class="w-full bg-green-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-green-700 transition">
-          User Dashboard
-        </button>
-      </a>
-    </div>
+  <div class="bg-white shadow-xl rounded-2xl p-10 max-w-4xl w-full border border-gray-200">
     
+    <!-- Branding -->
+    <div class="text-center mb-8">
+      <img src="{{ url_for('static', filename='rexus_logo.png') }}" alt="Rexus Logo" class="h-16 mx-auto mb-2" />
+      <h1 class="text-2xl font-bold text-gray-800">RexusOps360<sup class="text-sm">™</sup></h1>
+      <p class="text-sm text-gray-500 italic">Enterprise Emergency & Operations Management</p>
+    </div>
+
+    <!-- Page Title -->
+    <div class="text-center mb-8">
+      <h2 class="text-3xl font-semibold text-blue-700">🚨 Emergency Management System</h2>
+      <p class="text-gray-600 mt-2">Choose a dashboard to access the system</p>
+    </div>
+
+    <!-- Dashboard Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+
+      <!-- Admin Dashboard -->
+      <a href="{{ url_for('signin') }}" class="bg-gray-50 hover:bg-blue-50 border border-gray-200 rounded-xl p-6 transition shadow-sm hover:shadow-md">
+        <div class="text-center">
+          <h3 class="text-xl font-semibold text-blue-800 mb-2">Admin Dashboard</h3>
+          <p class="text-sm text-gray-600">Manage complaints, monitor data, and oversee operations.</p>
+        </div>
+      </a>
+
+      <!-- User Dashboard -->
+      <a href="{{ url_for('user_dashboard') }}" class="bg-gray-50 hover:bg-green-50 border border-gray-200 rounded-xl p-6 transition shadow-sm hover:shadow-md">
+        <div class="text-center">
+          <h3 class="text-xl font-semibold text-green-700 mb-2">User Dashboard</h3>
+          <p class="text-sm text-gray-600">File a complaint or check the status of your previous reports.</p>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center text-sm text-gray-400 mt-10">
+      &copy; {{ year or "2025" }} RexusOps360™ — All rights reserved.
+    </div>
+
   </div>
+
 </body>
 </html>

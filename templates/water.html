@@ -13,7 +13,7 @@
       <a href="{{ url_for('dashboard') }}" class="text-blue-600 hover:underline">← Back to Main Dashboard</a>
     </div>
 
-    <h1 class="text-3xl font-bold text-center text-blue-900 mb-8">🌊 Real-Time Water Complaint Dashboard</h1>
+    <h1 class="text-3xl font-bold text-center text-blue-900 mb-8">🚰 Real-Time Water Complaint Dashboard</h1>
 
     <!-- Chart Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
@@ -41,6 +41,7 @@
             <th class="p-2 border">Severity</th>
             <th class="p-2 border">Description</th>
             <th class="p-2 border">Reported At</th>
+            <th class="p-2 border">Status</th>
           </tr>
         </thead>
         <tbody id="waterTableBody">
@@ -54,6 +55,16 @@
     const incidentCountMap = {};
     const severityCtx = document.getElementById('severityChart').getContext('2d');
     const countCtx = document.getElementById('countChart').getContext('2d');
+
+    //Add this function to color status badges
+    function statusColor(status) {
+      switch (status) {
+        case 'Pending': return 'bg-yellow-500';
+        case 'In Progress': return 'bg-orange-500';
+        case 'Done': return 'bg-green-600';
+        default: return 'bg-gray-500';
+      }
+    }
 
     const severityChart = new Chart(severityCtx, {
       type: 'line',
@@ -122,6 +133,11 @@
             <td class="p-2 border">${incident.severity}</td>
             <td class="p-2 border">${incident.description}</td>
             <td class="p-2 border">${incident.created_at}</td>
+            <td class="p-2 border">
+              <span class="px-2 py-1 rounded text-white ${statusColor(incident.status)}">
+                ${incident.status}
+              </span>
+            </td>
           `;
           tbody.prepend(row);
 

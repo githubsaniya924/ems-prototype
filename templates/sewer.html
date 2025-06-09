@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -13,13 +13,13 @@
       <a href="{{ url_for('dashboard') }}" class="text-blue-600 hover:underline">← Back to Main Dashboard</a>
     </div>
 
-    <h1 class="text-3xl font-bold text-center text-blue-900 mb-8">🌊 Real-Time Sewer Complaint Dashboard</h1>
+    <h1 class="text-3xl font-bold text-center text-blue-900 mb-8">🕳️ Real-Time Sewer Complaint Dashboard</h1>
 
     <!-- Chart Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
       <!-- Severity Chart -->
       <div class="bg-white p-4 rounded shadow">
-        <h2 class="font-semibold mb-2">Sewer issues Severity Over Time</h2>
+        <h2 class="font-semibold mb-2">Sewer Issues Severity Over Time</h2>
         <canvas id="severityChart" class="w-full h-64"></canvas>
       </div>
 
@@ -41,6 +41,7 @@
             <th class="p-2 border">Severity</th>
             <th class="p-2 border">Description</th>
             <th class="p-2 border">Reported At</th>
+            <th class="p-2 border">Status</th>
           </tr>
         </thead>
         <tbody id="sewerTableBody">
@@ -54,6 +55,16 @@
     const incidentCountMap = {};
     const severityCtx = document.getElementById('severityChart').getContext('2d');
     const countCtx = document.getElementById('countChart').getContext('2d');
+
+    // ✅ Add this function to color status badges
+    function statusColor(status) {
+      switch (status) {
+        case 'Pending': return 'bg-yellow-500';
+        case 'In Progress': return 'bg-orange-500';
+        case 'Done': return 'bg-green-600';
+        default: return 'bg-gray-500';
+      }
+    }
 
     const severityChart = new Chart(severityCtx, {
       type: 'line',
@@ -106,15 +117,11 @@
         severityChart.data.datasets[0].data = [];
         countChart.data.labels = [];
         countChart.data.datasets[0].data = [];
-        // Reset incidentCountMap
         for (const key in incidentCountMap) delete incidentCountMap[key];
 
-        // Sort incidents by created_at ascending for charts
         incidents.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
 
-        // Fill table & charts
         incidents.forEach(incident => {
-          // Table row
           const row = document.createElement('tr');
           row.innerHTML = `
             <td class="p-2 border">${incident.name}</td>
@@ -122,15 +129,18 @@
             <td class="p-2 border">${incident.severity}</td>
             <td class="p-2 border">${incident.description}</td>
             <td class="p-2 border">${incident.created_at}</td>
+            <td class="p-2 border">
+              <span class="px-2 py-1 rounded text-white ${statusColor(incident.status)}">
+                ${incident.status}
+              </span>
+            </td>
           `;
           tbody.prepend(row);
 
           // Charts
-          // For severity chart, x = time, y = severity
           severityChart.data.labels.push(incident.created_at);
           severityChart.data.datasets[0].data.push(parseInt(incident.severity));
 
-          // For count chart, count number of incidents per created_at timestamp
           if (incidentCountMap[incident.created_at]) {
             incidentCountMap[incident.created_at]++;
           } else {
@@ -139,10 +149,8 @@
           }
         });
 
-        // Fill count chart data based on labels
         countChart.data.datasets[0].data = countChart.data.labels.map(label => incidentCountMap[label]);
 
-        // Update charts
         severityChart.update();
         countChart.update();
 
@@ -151,7 +159,6 @@
       }
     }
 
-    // Initial fetch and periodic refresh every 5 seconds
     window.onload = () => {
       fetchSewerData();
       setInterval(fetchSewerData, 5000);
