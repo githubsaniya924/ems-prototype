@@ -5,6 +5,8 @@
   <title>Sewer Tracking Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
 <body class="bg-gray-100 min-h-screen p-6">
 
@@ -13,7 +15,7 @@
       <a href="{{ url_for('dashboard') }}" class="text-blue-600 hover:underline">← Back to Main Dashboard</a>
     </div>
 
-    <h1 class="text-3xl font-bold text-center text-blue-900 mb-8">🕳️ Real-Time Sewer Complaint Dashboard</h1>
+    <h1 class="text-3xl font-bold text-center text-blue-900 mb-8"><i class="fas fa-toilet text-red-700 mr-2"></i> Real-Time Sewer Complaint Dashboard</h1>
 
     <!-- Chart Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
@@ -56,7 +58,7 @@
     const severityCtx = document.getElementById('severityChart').getContext('2d');
     const countCtx = document.getElementById('countChart').getContext('2d');
 
-    // ✅ Add this function to color status badges
+    //Add this function to color status badges
     function statusColor(status) {
       switch (status) {
         case 'Pending': return 'bg-yellow-500';

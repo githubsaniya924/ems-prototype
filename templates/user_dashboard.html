@@ -7,36 +7,48 @@
 </head>
 <body class="bg-gray-100 min-h-screen font-sans">
 
-  <!-- Header -->
-  <header class="bg-blue-900 text-white shadow-lg py-5 px-8 flex justify-between items-center">
-  <div>
-    <h1 class="text-3xl font-extrabold tracking-wide">RexusOps360™</h1>
-    <p class="text-sm text-gray-300 mt-1">Incident Tracking Operational Dashboard</p>
-    <h4 class="text-sm mt-1 text-gray-300">
-      Powered by 
-      <a href="https://amptier.net" target="_blank" class="text-blue-400 hover:underline hover:text-white transition">
-        Amptier
-      </a>
-    </h4>
-  </div>
+ <header class="bg-blue-900 text-white shadow-md px-6 py-4 md:py-6">
+  <div class="flex flex-col md:flex-row justify-between items-center md:items-start space-y-4 md:space-y-0">
+    
+    <!-- Left Content -->
+    <div class="text-center md:text-left">
+      <h1 class="text-3xl font-extrabold tracking-wide mb-1">RexusOps360™</h1>
+      <p class="text-sm text-gray-300">Incident Tracking Operational Dashboard</p>
 
-  <div class="flex items-center space-x-4">
-    <img src="{{ url_for('static', filename='rexus_logo.png') }}" alt="Rexus Logo" class="h-20 w-auto drop-shadow-lg">
+      <div class="mt-2 flex items-center justify-center md:justify-start space-x-2">
+        <span class="text-sm text-gray-300">Powered by</span>
+        <a href="https://amptier.net" target="_blank" class="hover:opacity-90 transition">
+          <img src="{{ url_for('static', filename='amptier_logo-removebg-preview.png') }}"
+               alt="Amptier Logo"
+               class="h-7 md:h-8 w-auto" />
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Logo -->
+    <div class="flex-shrink-0">
+      <img src="{{ url_for('static', filename='rexus_logo.png') }}" alt="Rexus Logo" class="h-16 w-auto drop-shadow-md">
+      <a href="https://www.rexus-group.com/" class="hover:underline font-medium text-sm text-gray-300" style="text-align: center;">www.rexus-group.com</a>
+    </div>
+    
   </div>
 </header>
 
+<br>
+<br>
   <!-- Navbar -->
-  <nav class="p-4 text-blue-600 flex justify-end items-center bg-white shadow rounded-lg mx-4 mb-4">
+  <div class="max-w-7xl mx-auto py-4 px-4 flex justify-between items-center">
+    <p class="text-sm text-gray-500">Date: {{ date_now|safe }}</p>
     <div class="space-x-6 font-medium">
       <a href="/file-complaint" class="hover:underline hover:text-blue-900">File Complaint</a>
       <a href="/view-complaints" class="hover:underline hover:text-blue-900">View Complaint Status</a>
       <a href="/logout" class="hover:underline text-red-500">Logout</a>
     </div>
-  </nav>
-
+  </div>
+<main class="max-w-7xl mx-auto px-4 pb-16">
   <!-- Weather Widget -->
   {% if weather %}
-  <div class="bg-gradient-to-r from-blue-100 to-blue-200 border-l-4 border-blue-500 text-blue-900 p-6 rounded-lg shadow mx-6 mb-6">
+  <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-900 p-4 rounded mb-6">
     <div class="flex items-center">
       <div>
         <p class="text-xl font-bold">Weather in {{ weather.city }}</p>
@@ -119,6 +131,7 @@
         </tbody>
       </table>
     </div>
+    </main>
 
   </div>
 </body>

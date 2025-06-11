@@ -123,6 +123,7 @@ def dashboard():
 
     total = db.execute("SELECT COUNT(*) FROM incidents").fetchone()[0]
     recent = db.execute("SELECT * FROM incidents ORDER BY created_at DESC LIMIT 10").fetchall()
+    
 
     # Eastern timezone formatting
     eastern = pytz.timezone('America/New_York')
@@ -253,7 +254,7 @@ def user_dashboard():
     db = get_db()
 
     # Fetch all complaints
-    complaints = db.execute("SELECT * FROM incidents ORDER BY created_at DESC").fetchall()
+    complaints = db.execute("SELECT * FROM incidents ORDER BY created_at DESC LIMIT 5").fetchall()
     total = len(complaints)
 
     # Fetch recent notifications (limit 5)
@@ -502,6 +503,15 @@ def update_status(id):
     db.execute("UPDATE incidents SET status = ? WHERE id = ?", (new_status, id))
     db.commit()
     return redirect(url_for("view_incident", id=id))
+
+
+@app.route("/view-complaints")
+def view_complaints():
+    db = get_db()
+    complaints = db.execute(
+        "SELECT * FROM incidents ORDER BY created_at DESC"
+    ).fetchall()
+    return render_template("view_complaints.html", complaints=complaints)
 
 
 
